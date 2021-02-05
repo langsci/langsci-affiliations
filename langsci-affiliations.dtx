@@ -65,6 +65,7 @@ Please report any bugs or feature requests to
 %<*driver>
 \documentclass{l3doc}
 \usepackage{langsci-affiliations}
+\usepackage[british]{babel}
 \usepackage{tikz}
   \usetikzlibrary{arrows, arrows.meta, positioning}
 \usepackage{enumitem}
@@ -79,12 +80,67 @@ Please report any bugs or feature requests to
 % 		Please submit bug reports and feature requests to
 % 		\protect\url{https://github.com/langsci/langsci-affiliations/issues}.
 % 	}}
-% \date{Version 1.0.0-rc -- 4 February 2021}
+% \date{Version 1.0.0 -- \today}
 % \maketitle
 % \frenchspacing
 % \begin{documentation}
-% \section{Introduction}
+% \section{User guide}
+% This package provides a command \cmd{\ResolveAffiliations}, which collects author--affiliation pairs and outputs them according to the user configuration. It is aimed at class authors, i.e. maintainers of document templates in publishing houses, universities, etc. It is probably not that useful to document authors.
 
+% \begin{function}{\ResolveAffiliations}
+% \begin{syntax} 
+%   \cs{ResolveAffiliations} \oarg{options} \marg{pairs of authors and affiliations}
+% \end{syntax} 
+% Takes the \marg{pairs of authors and affiliations}, orders them internally and outputs them according to the \oarg{options}. 
+% 
+% \marg{Pairs of authors and affiliations} is a list of authors and affiliations, where authors are separated by \verb+and+ and affiliations by \verb+;+. Affiliations are given within a phantom command \cs{affiliation} within the \marg{pairs} argument -- i.e. the command is not defined by this package and possibly existing definitions are left unchanged. 
+% 
+% For example:
+% 
+% \begin{verbatim} 
+% \ResolveAffiliations{
+%   A. U. Thor\affiliation{University of the Moon; University of Mars} 
+%   and B. U. Thor\affiliation{University of Mars}
+% }
+% \end{verbatim} 
+% results in:\\
+% 
+% \noindent\ResolveAffiliations[output authors font=\normalsize]{
+%   A. U. Thor\affiliation{University of the Moon; University of Mars} 
+%   and B. U. Thor\affiliation{University of Mars}
+% }\\
+% 
+% The output can be customised using the \oarg{options}. They are described below.
+% \end{function}
+
+% \begin{function}{\SetupAffiliations}
+%   \begin{syntax}
+%     \cs{SetupAffiliations} \marg{options}
+%   \end{syntax}
+% Options can be set either globally or locally. With \cs{SetupAffiliations}\marg{options}, they apply globally. If they are set with \cs{ResolveAffiliations}\oarg{options}, they apply locally.
+% 
+% \begin{description}[style=nextline]
+% \item[|mark style =| \meta{style}\hfill (initially |alphabetic|)] Controls which markers should be used in the indexes of affiliations. Can be a either of \{|alphabetic|, |numeric|, |circled|, |none|\}.
+% \item[|output affiliation =| \meta{boolean}\hfill (initially |true|)] Affiliations are output if true, otherwise not.
+% \item[|output in groups =| \meta{boolean}\hfill (initially |true|)] If |true|, authors and affiliations are output in the same line. When |false| each author and affiliation gets its own line.
+% \item[|output authors font =| \meta{font commands}\hfill (initially |\cs{Large}|)] Stores the font settings for the ouput of authors.
+% \item[|output affiliation font =| \meta{font commands}\hfill (initially |\cs{normalsize}|)] Stores the font settings for outputting affiliations.
+% \end{description}
+% 
+% \noindent Output separators between authors and affiliations are customisable as well:
+% 
+% \begin{description}[style=nextline]
+% \item[|separator between two =| \meta{tokens}\hfill (initially |\char`~\&\char`~|)]
+% If there are only two authors, use these \meta{tokens} to separate them.
+% \item[|separator between multiple =| \meta{tokens}\hfill (initially |,\char`~|)]
+% If there are more than two authors, use these \meta{tokens} to separate every pair except the last one.
+% \item[|separator between final two =| \meta{tokens}\hfill (initially |\char`~\&\char`~|)]
+% Use these \meta{tokens} to separate the last pair of authors if ther are more than two.
+% \item[|separator between affiliations =| \meta{tokens}\hfill (initially |,|)]
+% Use these to separate affiliations after each authors. The affiliations in the affiliation line are always separated by a space ().
+% \end{description}
+% 
+% \end{function}
 
 % \end{documentation}
 % 
@@ -95,12 +151,12 @@ Please report any bugs or feature requests to
 %<*package>
 %    \end{macrocode}
 %    \begin{macrocode}
-%<@@=avm>
+%<@@=affiliations>
 %    \end{macrocode}
 %    \begin{macrocode}
 \RequirePackage{xparse}
 \ProvidesExplPackage {langsci-affiliations}
-{2021-02-03} {1.0.0-rc}
+{2021-02-03} {1.0.0}
 {A LaTeX3 package to collect and order authors and their affiliations}
 
 
@@ -119,8 +175,8 @@ Please report any bugs or feature requests to
 
 \keys_define:nn { affiliations }
   {
-    affiliation~style .tl_set:N                = \l__affiliations_style_tl,
-    affiliation~style .initial:n               = { alphabetic },
+    mark~style .tl_set:N                       = \l__affiliations_style_tl,
+    mark~style .initial:n                      = { alphabetic },
     output~affiliation .bool_set:N             = \l__affiliations_output_affiliation_bool,
     output~affiliation .initial:n              = { true },
     output~in~groups .bool_set:N               = \l__affiliations_output_grouped_bool,
