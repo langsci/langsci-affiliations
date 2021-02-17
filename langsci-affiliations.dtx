@@ -140,6 +140,15 @@ Please report any bugs or feature requests to
 % Use these to separate affiliations after each authors. The affiliations in the affiliation line are always separated by a space ().
 % \end{description}
 % 
+% \noindent The way the input is digested can be customised with these two settings:
+% 
+% \begin{description}[style=nextline]
+% \item[|input names separator =| \meta{tokens}\hfill (initially |\char`~and\char`~|)]
+% Separates the author names in the input.
+% \item[|input affiliation separator =| \meta{tokens}\hfill (intially |;|)]
+% Separates the affiliations in the input, within dummy command \cs{affiliation}.
+% \end{description}
+% 
 % \end{function}
 
 % \end{documentation}
@@ -192,12 +201,16 @@ Please report any bugs or feature requests to
     output~authors~font .cs_set:Np             = \__affiliations_output_authors_font:,
     output~authors~font .initial:n             = {\Large},
     output~affiliation~font .cs_set:Np         = \__affiliations_output_affiliation_font:,
-    output~affiliation~font .initial:n         = {\normalsize}
+    output~affiliation~font .initial:n         = {\normalsize},
+    input~names~separator .tl_set:N            = \l__affiliations_input_names_sep_tl,
+    input~names~separator .initial:n           = {~and~},
+    input~affiliation~separator .tl_set:N      = \l_affiliations_input_afil_sep_tl,
+    input~affiliation~separator .initial:n     = {;}
   }
 
 \cs_generate_variant:Nn \prop_put:Nnn { Nxx }
 \cs_generate_variant:Nn \prop_put:Nnn { Nnx }
-\cs_generate_variant:Nn \seq_set_split:Nnn { Nnx }
+\cs_generate_variant:Nn \seq_set_split:Nnn { NVn }
 \clist_new:N \l__affiliations_tmpa_clist
 \int_new:N \l__affiliations_tmpa_int
 \prop_new:N \l__affiliations_tmpa_prop
@@ -228,7 +241,7 @@ Please report any bugs or feature requests to
         \prop_put:Nnn \l__affiliations_output_prop {#1} {}  
       }
       {
-        \seq_set_split:Nnn \l__affiliations_tmpa_seq {;} { #2 }
+        \seq_set_split:NVn \l__affiliations_tmpa_seq \l_affiliations_input_afil_sep_tl { #2 }
         \seq_map_inline:Nn \l__affiliations_tmpa_seq 
           {
             \prop_get:NnNTF \l__affiliations_affiliations_prop {##1} \l__affiliations_tmpa_tl
@@ -297,7 +310,7 @@ Please report any bugs or feature requests to
 
 \cs_new:Npn \affiliations_resolve:n #1 
   {
-    \seq_set_split:Nnn \l__affiliations_names_seq {~and~} { #1 }
+    \seq_set_split:NVn \l__affiliations_names_seq \l__affiliations_input_names_sep_tl { #1 }
     \seq_map_inline:Nn \l__affiliations_names_seq
       {
         \seq_clear_new:N \l__affiliations_names_tmp_seq
