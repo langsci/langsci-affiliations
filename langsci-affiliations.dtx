@@ -297,7 +297,7 @@ Please report any bugs or feature requests to
 
 \cs_new:Npn \affiliations_resolve:n #1 
   {
-    \seq_set_split:Nnn \l__affiliations_names_seq { and } { #1 }
+    \seq_set_split:Nnn \l__affiliations_names_seq {~and~} { #1 }
     \seq_map_inline:Nn \l__affiliations_names_seq
       {
         \seq_clear_new:N \l__affiliations_names_tmp_seq
