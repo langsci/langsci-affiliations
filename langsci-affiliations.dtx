@@ -80,7 +80,7 @@ Please report any bugs or feature requests to
 % 		Please submit bug reports and feature requests to
 % 		\protect\url{https://github.com/langsci/langsci-affiliations/issues}.
 % 	}}
-% \date{Version 1.0.1 -- \today}
+% \date{Version 1.0.2rc -- \today}
 % \maketitle
 % \frenchspacing
 % \begin{documentation}
@@ -110,7 +110,7 @@ Please report any bugs or feature requests to
 %   and B. U. Thor\affiliation{University of Mars}
 % }\\
 % 
-% The output can be customised using the \oarg{options}. They are described below.
+% \noindent The output can be customised using the \oarg{options}. They are described below.
 % \end{function}
 
 % \begin{function}{\SetupAffiliations}
@@ -122,7 +122,7 @@ Please report any bugs or feature requests to
 % \begin{description}[style=nextline]
 % \item[|mark style =| \meta{style}\hfill (initially |alphabetic|)] Controls which markers should be used in the indexes of affiliations. Can be a either of \{|alphabetic|, |numeric|, |circled|, |none|\}.
 % \item[|output affiliation =| \meta{boolean}\hfill (initially |true|)] Affiliations are output if true, otherwise not.
-% \item[|output in groups =| \meta{boolean}\hfill (initially |true|)] If |true|, authors and affiliations are output in the same line. When |false| each author and affiliation gets its own line.
+% \item[|output in groups =| \meta{boolean}\hfill (initially |true|)] If |true|, authors and affiliations are output in the same line. When |false| each author and affiliation gets its own line. Only available if |output affiliation=true|.
 % \item[|output authors font =| \meta{font commands}\hfill (initially |\cs{Large}|)] Stores the font settings for the ouput of authors.
 % \item[|output affiliation font =| \meta{font commands}\hfill (initially |\cs{normalsize}|)] Stores the font settings for outputting affiliations.
 % \end{description}
@@ -138,6 +138,8 @@ Please report any bugs or feature requests to
 % Use these \meta{tokens} to separate the last pair of authors if ther are more than two.
 % \item[|separator between affiliations =| \meta{tokens}\hfill (initially |,|)]
 % Use these to separate affiliations after each authors. The affiliations in the affiliation line are always separated by a space ().
+% \item[|separator between groups =| \meta{dimension}\hfill (initially |0.5ex|)]
+% Length of the space between authors and affiliations
 % \end{description}
 % 
 % \noindent The way the input is digested can be customised with these two settings:
@@ -165,7 +167,7 @@ Please report any bugs or feature requests to
 %    \begin{macrocode}
 \RequirePackage{xparse}
 \ProvidesExplPackage {langsci-affiliations}
-{2021-02-17} {1.0.1}
+{2021-02-25} {1.0.2}
 {A LaTeX3 package to collect and order authors and affiliations}
 %    \end{macrocode}
 
@@ -218,6 +220,10 @@ Please report any bugs or feature requests to
         = \l__affiliations_separator_between_last_two_tl,
     separator~between~final~two .initial:n
         = {~\&~},
+    separator~between~groups .dim_set:N
+        = \l__affiliations_separator_between_groups_dim,
+    separator~between~groups .initial:n
+        = {0.5ex},
     separator~between~affiliations .tl_set:N
         = \l__affiliations_afil_separator_tl,
     separator~between~affiliations .initial:n
@@ -446,24 +452,32 @@ Please report any bugs or feature requests to
             \group_begin:
               \__affiliations_output_authors_font:
               \__affiliations_output_authors:
-            \group_end:\\[0.5ex]
+            \group_end:\\[\dim_use:N \l__affiliations_separator_between_groups_dim]
             \group_begin:
               \__affiliations_output_affiliation_font:
               \__affiliations_output_affiliations:
             \group_end:
           }
           {
+            \seq_clear:N \l__affiliations_tmpa_seq
             \prop_map_inline:Nn \l__affiliations_tmpa_prop
               {
-                  \__affiliations_output_authors_font:
-                  \tl_rescan:nn {} {##1}\\[0.5ex]
-                  \group_begin:
-                    \__affiliations_output_affiliation_font: 
-                    \tl_rescan:nn {} {##2}
-                  \group_end:
-                  \medskip\\
+                \seq_put_right:Nx \l__affiliations_tmpa_seq 
+                  {
+                    \group_begin:
+                      \exp_not:N \__affiliations_output_authors_font:
+                      \tl_rescan:nn {} {##1}\\[\dim_use:N \l__affiliations_separator_between_groups_dim]
+                    \group_end:
+                    \group_begin:
+                      \exp_not:N \__affiliations_output_affiliation_font:
+                      \tl_rescan:nn {} {##2}
+                    \group_end:
+                  }
               }
-            \vspace*{-\baselineskip}
+            \seq_use:Nnnn \l__affiliations_tmpa_seq 
+                            {\l__affiliations_separator_between_two_tl} 
+                            {\l__affiliations_separator_between_mult_tl} 
+                            {\l__affiliations_separator_between_last_two_tl}
           }
       }
       {
