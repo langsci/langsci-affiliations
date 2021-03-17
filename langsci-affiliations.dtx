@@ -138,8 +138,6 @@ Please report any bugs or feature requests to
 % Use these \meta{tokens} to separate the last pair of authors if ther are more than two.
 % \item[|separator between affiliations =| \meta{tokens}\hfill (initially |,|)]
 % Use these to separate affiliations after each authors. The affiliations in the affiliation line are always separated by a space ().
-% \item[|separator between groups =| \meta{dimension}\hfill (initially |0.5ex|)]
-% Length of the space between authors and affiliations
 % \end{description}
 % 
 % \noindent The way the input is digested can be customised with these two settings:
@@ -220,10 +218,6 @@ Please report any bugs or feature requests to
         = \l__affiliations_separator_between_last_two_tl,
     separator~between~final~two .initial:n
         = {~\&~},
-    separator~between~groups .dim_set:N
-        = \l__affiliations_separator_between_groups_dim,
-    separator~between~groups .initial:n
-        = {0.5ex},
     separator~between~affiliations .tl_set:N
         = \l__affiliations_afil_separator_tl,
     separator~between~affiliations .initial:n
@@ -452,7 +446,7 @@ Please report any bugs or feature requests to
             \group_begin:
               \__affiliations_output_authors_font:
               \__affiliations_output_authors:
-            \group_end:\\[\dim_use:N \l__affiliations_separator_between_groups_dim]
+            \group_end:\\[0.5ex]
             \group_begin:
               \__affiliations_output_affiliation_font:
               \__affiliations_output_affiliations:
@@ -466,7 +460,7 @@ Please report any bugs or feature requests to
                   {
                     \group_begin:
                       \exp_not:N \__affiliations_output_authors_font:
-                      \tl_rescan:nn {} {##1}\\[\dim_use:N \l__affiliations_separator_between_groups_dim]
+                      \tl_rescan:nn {} {##1}\\[0.5ex]
                     \group_end:
                     \group_begin:
                       \exp_not:N \__affiliations_output_affiliation_font:
