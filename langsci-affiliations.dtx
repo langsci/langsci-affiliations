@@ -80,7 +80,7 @@ Please report any bugs or feature requests to
 % 		Please submit bug reports and feature requests to
 % 		\protect\url{https://github.com/langsci/langsci-affiliations/issues}.
 % 	}}
-% \date{Version 1.0.2 -- \today}
+% \date{Version 1.0.3 -- \today}
 % \maketitle
 % \frenchspacing
 % \begin{documentation}
@@ -93,7 +93,7 @@ Please report any bugs or feature requests to
 % \end{syntax} 
 % Takes the \marg{pairs of authors and affiliations}, orders them internally and outputs them according to the \oarg{options}. 
 % 
-% \marg{Pairs of authors and affiliations} is a list of authors and affiliations, where authors are separated by \verb+and+ and affiliations by \verb+;+. Affiliations are given within a phantom command \cs{affiliation} within the \marg{pairs} argument -- i.e. the command is not defined by this package and possibly existing definitions are left unchanged. 
+% \marg{Pairs of authors and affiliations} is a list of authors and affiliations, separated by a customisable string. The defaults for the separators are \verb+and+ for authors and \verb+;+ for affiliations. The conventional author separator \cs{and} is automatically converted to the chosen author separator. Affiliations are given within a phantom command \cs{affiliation} within the \marg{pairs} argument -- i.e. the command is not defined by this package and possibly existing definitions are left unchanged. 
 % 
 % For example:
 % 
@@ -165,7 +165,7 @@ Please report any bugs or feature requests to
 %    \begin{macrocode}
 \RequirePackage{xparse}
 \ProvidesExplPackage {langsci-affiliations}
-{2021-03-19} {1.0.2}
+{2021-03-26} {1.0.3}
 {A LaTeX3 package to collect and order authors and affiliations}
 %    \end{macrocode}
 
@@ -260,7 +260,9 @@ Please report any bugs or feature requests to
 
 \cs_generate_variant:Nn \prop_put:Nnn { Nxx }
 \cs_generate_variant:Nn \prop_put:Nnn { Nnx }
+\cs_generate_variant:Nn \seq_set_split:Nnn { NVV }
 \cs_generate_variant:Nn \seq_set_split:Nnn { NVn }
+\cs_generate_variant:Nn \tl_replace_all:Nnn { NnV }
 \clist_new:N \l__affiliations_tmpa_clist
 \int_new:N \l__affiliations_tmpa_int
 \prop_new:N \l__affiliations_tmpa_prop
@@ -271,6 +273,7 @@ Please report any bugs or feature requests to
 \seq_new:N \l__affiliations_tmpb_seq
 \tl_new:N \l__affiliations_tmpa_tl
 \tl_new:N \l__affiliations_tmpb_tl
+\tl_new:N \l__affiliations_tmpc_tl
 \prop_new:N \l__affiliations_output_prop
 \prop_new:N \l__affiliations_affiliations_prop
 %    \end{macrocode}
@@ -425,9 +428,13 @@ Please report any bugs or feature requests to
 %    \begin{macrocode}
 \cs_new:Npn \affiliations_resolve:n #1 
   {
-    \seq_set_split:NVn \l__affiliations_names_seq 
-                       \l__affiliations_input_names_sep_tl 
-                       { #1 }
+    \tl_set:Nn \l__affiliations_tmpc_tl { #1 }
+    \tl_replace_all:NnV \l__affiliations_tmpc_tl 
+                        { \and }
+                        \l__affiliations_input_names_sep_tl
+    \seq_set_split:NVV \l__affiliations_names_seq
+                       \l__affiliations_input_names_sep_tl
+                       \l__affiliations_tmpc_tl
     \seq_map_inline:Nn \l__affiliations_names_seq
       {
         \seq_clear_new:N \l__affiliations_names_tmp_seq
