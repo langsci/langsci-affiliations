@@ -80,7 +80,7 @@ Please report any bugs or feature requests to
 % 		Please submit bug reports and feature requests to
 % 		\protect\url{https://github.com/langsci/langsci-affiliations/issues}.
 % 	}}
-% \date{Version 1.0.3 -- \today}
+% \date{Version 1.0.4 -- \today}
 % \maketitle
 % \frenchspacing
 % \begin{documentation}
@@ -111,6 +111,18 @@ Please report any bugs or feature requests to
 % }\\
 % 
 % \noindent The output can be customised using the \oarg{options}. They are described below.
+% \end{function}
+
+% \begin{function}[added=2021-12-06]{\CountAuthorsFromAffiliations}
+%   \begin{syntax}
+%     \cs{CountAuthorsFromAffiliations} \oarg{options} \marg{pairs of authors and affiliations}
+%   \end{syntax}
+% A document command to cound the numbers of authors given in a list. Useful
+% for conditional behaviour of document classes based on the numbers of authors.
+% It takes the same optional arguments as \cmd{\ResolveAffiliations}. This means
+% that a custom author separator is recognised by this command.
+% 
+% The resuls is stored in the global integer variable \cs{g__affiliations_num_authors_int}.
 % \end{function}
 
 % \begin{function}{\SetupAffiliations}
@@ -165,7 +177,7 @@ Please report any bugs or feature requests to
 %    \begin{macrocode}
 \RequirePackage{xparse}
 \ProvidesExplPackage {langsci-affiliations}
-{2021-03-26} {1.0.3}
+{2021-11-30} {1.0.4}
 {A LaTeX3 package to collect and order authors and affiliations}
 %    \end{macrocode}
 
@@ -177,6 +189,20 @@ Please report any bugs or feature requests to
     \group_begin:
     \keys_set:nn { affiliations } { #1 }%
     \exp_args:No \affiliations_resolve:n { #2 }%
+    \group_end:
+  }
+%    \end{macrocode}
+%    \end{macro}
+
+%    \begin{macro}{\CountAuthorsFromAffiliations}
+% Count authors and leave the result in the global integer variable
+% \cs{g__affiliations_num_authors_int}.
+%    \begin{macrocode}
+\NewExpandableDocumentCommand{\CountAuthorsFromAffiliations}{ O{} +m }
+  {%
+    \group_begin:
+    \keys_set:nn { affiliations } { #1 }%
+    \exp_args:No \affiliations_count_authors:n { #2 }%
     \group_end:
   }
 %    \end{macrocode}
@@ -246,6 +272,7 @@ Please report any bugs or feature requests to
 %           \seq_set_split:Nvn,
 %           \l__affiliations_tmpa_clist, 
 %           \l__affiliations_tmpa_int, 
+%           \g__affiliations_num_authors_int,
 %           \l__affiliations_affiliations_seq, 
 %           \l__affiliations_authors_seq, 
 %           \l__affiliations_names_seq, 
@@ -255,7 +282,7 @@ Please report any bugs or feature requests to
 %           \l__affiliations_tmpb_tl,
 %           \l__affiliations_output_prop,
 %           \l__affiliations_affiliations_prop}
-% Internal variants and variables
+% Variants and variables
 %    \begin{macrocode}
 
 \cs_generate_variant:Nn \prop_put:Nnn { Nxx }
@@ -265,6 +292,7 @@ Please report any bugs or feature requests to
 \cs_generate_variant:Nn \tl_replace_all:Nnn { NnV }
 \clist_new:N \l__affiliations_tmpa_clist
 \int_new:N \l__affiliations_tmpa_int
+\int_new:N \g__affiliations_num_authors_int
 \prop_new:N \l__affiliations_tmpa_prop
 \seq_new:N \l__affiliations_affiliations_seq
 \seq_new:N \l__affiliations_authors_seq
@@ -496,6 +524,24 @@ Please report any bugs or feature requests to
                         {\l__affiliations_separator_between_last_two_tl}
         \group_end:
       }
+  }
+%    \end{macrocode}
+%    \end{macro}
+%    \begin{macro}[int]{\affiliations_count_authors:n}
+%    Count the numbers of authors and saves the result in the global integer 
+%    variable \cs{g__affiliations_num_authors_int}.
+%    \begin{macrocode}
+\cs_new:Npn \affiliations_count_authors:n #1
+  {
+    \tl_set:Nn \l__affiliations_tmpc_tl { #1 }
+    \tl_replace_all:NnV \l__affiliations_tmpc_tl
+                        { \and }
+                        \l__affiliations_input_names_sep_tl
+    \seq_set_split:NVV \l__affiliations_names_seq
+                       \l__affiliations_input_names_sep_tl
+                       \l__affiliations_tmpc_tl
+    \int_gset:Nn \g__affiliations_num_authors_int 
+      {  \seq_count:N \l__affiliations_names_seq  }
   }
 %    \end{macrocode}
 %    \end{macro}
