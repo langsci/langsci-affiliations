@@ -80,7 +80,7 @@ Please report any bugs or feature requests to
 % 		Please submit bug reports and feature requests to
 % 		\protect\url{https://github.com/langsci/langsci-affiliations/issues}.
 % 	}}
-% \date{Version 1.0.4 -- \today}
+% \date{Version 1.1rc1 -- \today}
 % \maketitle
 % \frenchspacing
 % \begin{documentation}
@@ -178,7 +178,7 @@ Please report any bugs or feature requests to
 %    \begin{macrocode}
 \RequirePackage{xparse}
 \ProvidesExplPackage {langsci-affiliations}
-{2021-11-30} {1.0.4}
+{2022-09-27} {1.1rc1}
 {A LaTeX3 package to collect and order authors and affiliations}
 %    \end{macrocode}
 
@@ -192,6 +192,13 @@ Please report any bugs or feature requests to
     \exp_args:No \affiliations_resolve:n { #2 }%
     \group_end:
   }
+%    \end{macrocode}
+%    \end{macro}
+
+%    \begin{macro}{\LinkToORCIDinAffiliations}
+% The action taken to link to an ORCID. Designed to be overwritten by the user.
+%    \begin{macrocode}
+\ProvideDocumentCommand{\LinkToORCIDinAffiliations}{ +m }{ #1 }
 %    \end{macrocode}
 %    \end{macro}
 
@@ -445,10 +452,34 @@ Please report any bugs or feature requests to
             \seq_use:Nn \l__affiliations_tmpb_seq 
                         {\l__affiliations_afil_separator_tl}
           }
-        \seq_put_right:Nx \l__affiliations_tmpa_seq 
+        \str_case_e:nn { \l__affiliations_orcid_place_tl }
           {
-            \tl_rescan:nn {} {##1} 
-            \exp_not:N \textsuperscript{\tl_use:N \l__affiliations_tmpb_tl} 
+            {none}
+            {
+              \seq_put_right:Nx \l__affiliations_tmpa_seq 
+                {
+                  \tl_rescan:nn {} {##1} 
+                  \exp_not:N \textsuperscript{\tl_use:N \l__affiliations_tmpb_tl} 
+                }
+            }
+            {before}
+            {
+              \seq_put_right:Nx \l__affiliations_tmpa_seq 
+                {
+                  \exp_not:N \__affiliations_recover_orcid:n { ##1 }
+                  \tl_rescan:nn {} {##1} 
+                  \exp_not:N \textsuperscript{\tl_use:N \l__affiliations_tmpb_tl} 
+                }            
+            }
+            {after}
+            {
+              \seq_put_right:Nx \l__affiliations_tmpa_seq 
+                {
+                  \tl_rescan:nn {} {##1} 
+                  \exp_not:N \__affiliations_recover_orcid:n { ##1 }
+                  \exp_not:N \textsuperscript{\tl_use:N \l__affiliations_tmpb_tl} 
+                }            
+            }
           }
       }
     \seq_use:Nnnn \l__affiliations_tmpa_seq 
@@ -535,16 +566,52 @@ Please report any bugs or feature requests to
             \seq_clear:N \l__affiliations_tmpa_seq
             \prop_map_inline:Nn \l__affiliations_tmpa_prop
               {
-                \seq_put_right:Nx \l__affiliations_tmpa_seq 
+                \str_case_e:nn { \l__affiliations_orcid_place_tl }
                   {
-                    \group_begin:
-                      \exp_not:N \__affiliations_output_authors_font:
-                      \tl_rescan:nn {} {##1}\\[0.5ex]
-                    \group_end:
-                    \group_begin:
-                      \exp_not:N \__affiliations_output_affiliation_font:
-                      \tl_rescan:nn {} {##2}
-                    \group_end:
+                    {none} 
+                    {
+                      \seq_put_right:Nx \l__affiliations_tmpa_seq 
+                        {
+                          \group_begin:
+                            \exp_not:N \__affiliations_output_authors_font:
+                            \tl_rescan:nn {} {##1}\\[0.5ex]
+                          \group_end:
+                          \group_begin:
+                            \exp_not:N \__affiliations_output_affiliation_font:
+                            \tl_rescan:nn {} {##2}
+                          \group_end:
+                        }
+                    }
+                    {before} 
+                    {
+                      \seq_put_right:Nx \l__affiliations_tmpa_seq 
+                        {
+                          \group_begin:
+                            \exp_not:N \__affiliations_output_authors_font:
+                            \exp_not:N \__affiliations_recover_orcid:n { ##1 }
+                            \tl_rescan:nn {} {##1}\\[0.5ex]
+                          \group_end:
+                          \group_begin:
+                            \exp_not:N \__affiliations_output_affiliation_font:
+                            \tl_rescan:nn {} {##2}
+                          \group_end:
+                        }
+                    }
+                    {after} 
+                    {
+                      \seq_put_right:Nx \l__affiliations_tmpa_seq 
+                        {
+                          \group_begin:
+                            \exp_not:N \__affiliations_output_authors_font:
+                            \tl_rescan:nn {} {##1}
+                            \exp_not:N \__affiliations_recover_orcid:n { ##1 }\\[0.5ex]
+                          \group_end:
+                          \group_begin:
+                            \exp_not:N \__affiliations_output_affiliation_font:
+                            \tl_rescan:nn {} {##2}
+                          \group_end:
+                        }
+                    }
                   }
               }
             \seq_use:Nnnn \l__affiliations_tmpa_seq 
@@ -559,8 +626,30 @@ Please report any bugs or feature requests to
         \seq_clear:N \l__affiliations_tmpa_seq
         \prop_map_inline:Nn \l__affiliations_tmpa_prop
           {
-            \seq_put_right:Nx \l__affiliations_tmpa_seq 
-                              {\tl_rescan:nn {} {##1} }
+            \str_case_e:nn { \l__affiliations_orcid_place_tl }
+              {
+                {none}
+                  {
+                    \seq_put_right:Nx \l__affiliations_tmpa_seq
+                                      { \tl_rescan:nn {} {##1} }
+                  }
+                {before}
+                  {
+                    \seq_put_right:Nx \l__affiliations_tmpa_seq 
+                                      {
+                                        \exp_not:N \__affiliations_recover_orcid:n { ##1 }
+                                        \tl_rescan:nn {} {##1} 
+                                      }
+                  }
+                {after}
+                  {
+                    \seq_put_right:Nx \l__affiliations_tmpa_seq 
+                                      {
+                                        \tl_rescan:nn {} {##1} 
+                                        \exp_not:N \__affiliations_recover_orcid:n { ##1 }
+                                      }
+                  }   
+                }           
           }
         \seq_use:Nnnn \l__affiliations_tmpa_seq 
                         {\l__affiliations_separator_between_two_tl} 
@@ -586,6 +675,21 @@ Please report any bugs or feature requests to
                        \l__affiliations_tmpc_tl
     \int_gset:Nn \g__affiliations_num_authors_int 
       {  \seq_count:N \l__affiliations_names_seq  }
+  }
+%    \end{macrocode}
+%    \end{macro}
+%    \begin{macro}[int]{\__affiliations_recover_orcid:n}
+%    Return the ORCID associated with an author.
+%    \begin{macrocode}
+\cs_new:Npn \__affiliations_recover_orcid:n #1
+  {
+    \prop_get:NnNTF \l__affiliations_orcids_prop { #1 }
+      \l__affiliations_tmpd_tl
+      { 
+        \LinkToORCIDinAffiliations{\tl_use:N \l__affiliations_tmpd_tl}
+      }
+      % No ORCID present; no action done.
+      { }
   }
 %    \end{macrocode}
 %    \end{macro}
