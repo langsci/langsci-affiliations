@@ -468,12 +468,33 @@ Please report any bugs or feature requests to
                        \l__affiliations_tmpc_tl
     \seq_map_inline:Nn \l__affiliations_names_seq
       {
-        \seq_clear_new:N \l__affiliations_names_tmp_seq
-        \seq_set_split:Nnn \l__affiliations_names_tmp_seq { \affiliation } 
-                           { ##1 }
+        \tl_clear_new:N \l__affiliations_names_tmp_tl
+        \tl_set:Nn \l__affiliations_names_tmp_tl { ##1 }
+        
+        \regex_extract_once:nnN 
+          {\c{affiliation} \cB. (\c[^BE].*) \cE.}
+          { ##1 }
+          \l__affiliations_tmp_affil_seq
+          
+        \regex_extract_once:nnN 
+          {\c{orcid} \cB. (\c[^BE].*) \cE.}
+          { ##1 }
+          \l__affiliations_tmp_orcid_seq
+                           
+        \regex_replace_all:nnN {\c{orcid} \cB. (\c[^BE].*) \cE.} 
+                               {} 
+                               \l__affiliations_names_tmp_tl
+        \regex_replace_all:nnN {\c{affiliation} \cB. (\c[^BE].*) \cE.} 
+                               {}
+                               \l__affiliations_names_tmp_tl
+
         \prop_put:Nxx \l__affiliations_tmpa_prop
-        { \seq_item:Nn \l__affiliations_names_tmp_seq {1} }
-        { \seq_item:Nn \l__affiliations_names_tmp_seq {2} }  
+        { \tl_use:N \l__affiliations_names_tmp_tl }
+        { \seq_item:Nn \l__affiliations_tmp_affil_seq {2} }  
+        
+        \prop_put:Nxx \l__affiliations_orcids_prop
+        { \tl_use:N \l__affiliations_names_tmp_tl }
+        { \seq_item:Nn \l__affiliations_tmp_orcid_seq {2} } 
       }
     \bool_if:NTF \l__affiliations_output_affiliation_bool
       {
