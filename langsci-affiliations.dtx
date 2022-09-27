@@ -471,6 +471,12 @@ Please report any bugs or feature requests to
         \tl_clear_new:N \l__affiliations_names_tmp_tl
         \tl_set:Nn \l__affiliations_names_tmp_tl { ##1 }
         
+%    \end{macrocode}       
+% Regex-parsing: We store the \marg{affiliations} found in \cs{affiliation} to
+% a separate sequence, and the \marg{orcid} found in \cs{orcid} to another
+% sequence.
+%    \begin{macrocode}
+        
         \regex_extract_once:nnN 
           {\c{affiliation} \cB. (\c[^BE].*) \cE.}
           { ##1 }
@@ -480,6 +486,11 @@ Please report any bugs or feature requests to
           {\c{orcid} \cB. (\c[^BE].*) \cE.}
           { ##1 }
           \l__affiliations_tmp_orcid_seq
+          
+%    \end{macrocode}       
+%  Now strip all instances of \cs{affiliations}\marg{list} and \cs{orcid}
+%  \marg{id} to receive the name of the author.
+%    \begin{macrocode}       
                            
         \regex_replace_all:nnN {\c{orcid} \cB. (\c[^BE].*) \cE.} 
                                {} 
@@ -488,6 +499,10 @@ Please report any bugs or feature requests to
                                {}
                                \l__affiliations_names_tmp_tl
 
+%    \end{macrocode}       
+%  And store the data in two separate property lists.
+%    \begin{macrocode}                                
+                               
         \prop_put:Nxx \l__affiliations_tmpa_prop
         { \tl_use:N \l__affiliations_names_tmp_tl }
         { \seq_item:Nn \l__affiliations_tmp_affil_seq {2} }  
