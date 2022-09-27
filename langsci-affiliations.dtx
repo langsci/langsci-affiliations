@@ -134,6 +134,7 @@ Please report any bugs or feature requests to
 % \begin{description}[style=nextline]
 % \item[|mark style =| \meta{style}\hfill (initially |alphabetic|)] Controls which markers should be used in the indexes of affiliations. Can be a either of \{|alphabetic|, |numeric|, |circled|, |none|\}.
 % \item[|output affiliation =| \meta{boolean}\hfill (initially |true|)] Affiliations are output if true, otherwise not.
+% \item[|orcid placement =| \meta{choice}\hfill (initially |none|)] Decide whether and where to place ORCIDs around author names. Valid choices are \{|none|, |before|, |after|\}.
 % \item[|output in groups =| \meta{boolean}\hfill (initially |true|)] If |true|, authors and affiliations are output in the same line. When |false| each author and affiliation gets its own line. Only available if |output affiliation=true|.
 % \item[|output authors font =| \meta{font commands}\hfill (initially |\cs{Large}|)] Stores the font settings for the ouput of authors.
 % \item[|output affiliation font =| \meta{font commands}\hfill (initially |\cs{normalsize}|)] Stores the font settings for outputting affiliations.
@@ -228,6 +229,10 @@ Please report any bugs or feature requests to
         = \l__affiliations_output_affiliation_bool,
     output~affiliation .initial:n
         = { true },
+    orcid~placement .tl_set:N
+        = \l__affiliations_orcid_place_tl,
+    orcid~placement .initial:n
+        = { none },    
     output~in~groups .bool_set:N
         = \l__affiliations_output_grouped_bool,
     output~in~groups .initial:n
