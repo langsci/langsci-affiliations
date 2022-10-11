@@ -21,10 +21,10 @@ package is probably of only limited use to document authors/end users.
 langsci-affiliations was developed at Language Science Press to help in the
 production of scientific texts in linguistics.
 
-Copyright (C) 2021 by Felix Kopecky, Language Science Press
+Copyright (C) 2022 by Felix Kopecky, Language Science Press
 
 This work consists of the file  langsci-affiliations.dtx 
-          and the derived files langsci-affiliations.ins,
+          and the derived files langsci-affiliations.sty,
                                 langsci-affiliations.pdf.
                                 
 It may be distributed and/or modified under the conditions of the
@@ -58,8 +58,6 @@ Please report any bugs or feature requests to
 %<*internal>
 \usepreamble\minimalpreamble
 \usepostamble\defaultpostamble
-\usedir{source/latex/langsci-affiliations}
-\generate{\file{\jobname.ins}{\from{\jobname.dtx}{install}}}
 \endgroup
 %</internal>
 %<*driver>
@@ -80,7 +78,7 @@ Please report any bugs or feature requests to
 % 		Please submit bug reports and feature requests to
 % 		\protect\url{https://github.com/langsci/langsci-affiliations/issues}.
 % 	}}
-% \date{Version 1.1rc2 -- \today}
+% \date{Version 1.1 -- \today}
 % \maketitle
 % \frenchspacing
 % \begin{documentation}
@@ -178,7 +176,7 @@ Please report any bugs or feature requests to
 %    \begin{macrocode}
 \RequirePackage{xparse}
 \ProvidesExplPackage {langsci-affiliations}
-{2022-09-29} {1.1rc2}
+{2022-10-11} {1.1}
 {A LaTeX3 package to collect and order authors and affiliations}
 %    \end{macrocode}
 
