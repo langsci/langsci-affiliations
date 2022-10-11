@@ -83,7 +83,7 @@ Please report any bugs or feature requests to
 % \frenchspacing
 % \begin{documentation}
 % \section{User guide}
-% This package provides a command \cmd{\ResolveAffiliations}, which collects author--affiliation pairs and outputs them according to the user configuration. It is aimed at class authors, i.e. maintainers of document templates in publishing houses, universities, etc. It is probably not that useful to document authors.
+% This package provides a command \cmd{\ResolveAffiliations}, which collects author--affiliation pairs and outputs them according to the user configuration. It is aimed at class authors, i.e. maintainers of document templates in publishing houses, universities, etc.
 
 % \begin{function}{\ResolveAffiliations}
 % \begin{syntax} 
@@ -91,7 +91,7 @@ Please report any bugs or feature requests to
 % \end{syntax} 
 % Takes the \marg{pairs of authors and affiliations}, orders them internally and outputs them according to the \oarg{options}. 
 % 
-% \marg{Pairs of authors and affiliations} is a list of authors and affiliations, separated by a customisable string. The defaults for the separators are \verb+and+ for authors and \verb+;+ for affiliations. The conventional author separator \cs{and} is automatically converted to the chosen author separator. Affiliations are given within a phantom command \cs{affiliation} within the \marg{pairs} argument -- i.e. the command is not defined by this package and possibly existing definitions are left unchanged. 
+% \marg{Pairs of authors and affiliations} is a list of authors and affiliations, separated by a customisable string. The defaults for the separators are \verb+and+ for authors and \verb+;+ for affiliations. The conventional author separator \cs{and} is automatically converted to the chosen author separator. Affiliations are given within \cs{affiliation} within the \marg{pairs} argument. This command is not defined by this package and possibly existing definitions are left unchanged. 
 % 
 % For example:
 % 
@@ -115,12 +115,28 @@ Please report any bugs or feature requests to
 %   \begin{syntax}
 %     \cs{CountAuthorsFromAffiliations} \oarg{options} \marg{pairs of authors and affiliations}
 %   \end{syntax}
-% A document command to cound the numbers of authors given in a list. Useful
+% A document command to count the numbers of authors given in a list. Useful
 % for conditional behaviour of document classes based on the numbers of authors.
-% It takes the same optional arguments as \cmd{\ResolveAffiliations}. This means
-% that a custom author separator is recognised by this command.
+% It takes the same optional arguments as \cmd{\ResolveAffiliations}. For example,
+% a custom author separator is recognised by this command.
 % 
-% The resuls is stored in the global integer variable \cs{g__affiliations_num_authors_int}.
+% The result is stored in the global integer variable \cs{g__affiliations_num_authors_int}.
+% \end{function}
+
+% \begin{function}[added=2022-09-27]{\LinkToORCIDinAffiliations}
+%   \begin{syntax}
+%     \cs{LinkToORCIDinAffiliations} \marg{orcid}
+%   \end{syntax}
+% This document command is intended as a user interface to customise the way
+% ORCIDs are output. For example, it can be set to forward the input ORCIDs to
+% \cs{orcidlink} from the \pkg{orcidlink} package:
+% 
+% \begin{verbatim}
+% \RenewDocumentCommand{\LinkToORCIDinAffiliations}{ +m }
+%   {%
+%     \,\orcidlink{#1}%
+%   }
+% \end{verbatim}
 % \end{function}
 
 % \begin{function}{\SetupAffiliations}
@@ -148,7 +164,7 @@ Please report any bugs or feature requests to
 % \item[|separator between final two =| \meta{tokens}\hfill (initially |\char`~\&\char`~|)]
 % Use these \meta{tokens} to separate the last pair of authors if ther are more than two.
 % \item[|separator between affiliations =| \meta{tokens}\hfill (initially |,|)]
-% Use these to separate affiliations after each authors. The affiliations in the affiliation line are always separated by a space ().
+% Use these to separate affiliations after each author. The affiliations in the affiliation line are always separated by a space.
 % \end{description}
 % 
 % \noindent The way the input is digested can be customised with these two settings:
