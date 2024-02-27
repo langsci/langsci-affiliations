@@ -101,9 +101,9 @@ Please report any bugs or feature requests to
 %   and B. U. Thor\affiliation{University of Mars}
 % }
 % \end{verbatim} 
-% results in:\\
+% results in:
 % 
-% \noindent\ResolveAffiliations[output authors font=\normalsize]{
+% \ResolveAffiliations[output authors font=\normalsize]{
 %   A. U. Thor\affiliation{University of the Moon; University of Mars} 
 %   and B. U. Thor\affiliation{University of Mars}
 % }\\
@@ -125,6 +125,8 @@ Please report any bugs or feature requests to
 % \item[|output in groups =| \meta{boolean}\hfill (initially |true|)] If |true|, authors and affiliations are output in the same line. When |false| each author and affiliation gets its own line. Only available if |output affiliation=true|.
 % \item[|output authors font =| \meta{font commands}\hfill (initially |\cs{Large}|)] Stores the font settings for the ouput of authors.
 % \item[|output affiliation font =| \meta{font commands}\hfill (initially |\cs{normalsize}|)] Stores the font settings for outputting affiliations.
+% \item[|output authors paragraph format =| \meta{layout settings}\hfill (initially |\cs{raggedright}|)] Stores the paragraph settings for the author block. These settings are only applied if |output in groups=true|.
+% \item[|output affiliation paragraph format =| \meta{layout settings}\hfill (initially |\cs{raggedright}|)] Stores the paragraph settings for the affiliation block. These settings are only applied if |output in groups=true|.
 % \end{description}
 % 
 % \noindent Output separators between authors and affiliations are customisable as well:
@@ -277,6 +279,10 @@ Please report any bugs or feature requests to
         = \l__affiliations_afil_separator_tl,
     separator~between~affiliations .initial:n
         = {~},
+    output~authors~paragraph~format .cs_set:Np
+        = \__affiliations_output_authors_paragraph_format:,
+    output~authors~paragraph~format .initial:n
+        = {\raggedright},
     output~authors~font .cs_set:Np
         = \__affiliations_output_authors_font:,
     output~authors~font .initial:n
@@ -285,6 +291,10 @@ Please report any bugs or feature requests to
         = \__affiliations_output_affiliation_font:,
     output~affiliation~font .initial:n
         = {\normalsize},
+    output~affiliation~paragraph~format .cs_set:Np
+        = \__affiliations_output_affiliation_paragraph_format:,
+    output~affiliation~paragraph~format .initial:n
+        = {\raggedright},
     input~names~separator .tl_set:N
         = \l__affiliations_input_names_sep_tl,
     input~names~separator .initial:n
@@ -584,12 +594,21 @@ Please report any bugs or feature requests to
             \prop_map_function:NN \l__affiliations_tmpa_prop 
                                   \__affiliations_resolve_affiliations:
             \group_begin:
-              \__affiliations_output_authors_font:
-              \__affiliations_output_authors:
-            \group_end:\\[0.5ex]
+              \noindent
+              \parbox {\linewidth}
+                {
+                  \__affiliations_output_authors_paragraph_format:
+                  \__affiliations_output_authors_font:
+                  \__affiliations_output_authors:
+                }
+            \group_end:\smallskip\\
             \group_begin:
-              \__affiliations_output_affiliation_font:
-              \__affiliations_output_affiliations:
+              \parbox {\linewidth}
+                {
+                  \__affiliations_output_affiliation_paragraph_format:
+                  \__affiliations_output_affiliation_font:
+                  \__affiliations_output_affiliations:
+                }
             \group_end:
           }
           {
@@ -604,8 +623,8 @@ Please report any bugs or feature requests to
                         {
                           \group_begin:
                             \exp_not:N \__affiliations_output_authors_font:
-                            \tl_rescan:nn {} {##1}\\[0.5ex]
-                          \group_end:
+                            \tl_rescan:nn {} {##1}
+                          \group_end:\\[0.5ex]
                           \group_begin:
                             \exp_not:N \__affiliations_output_affiliation_font:
                             \tl_rescan:nn {} {##2}
@@ -645,6 +664,7 @@ Please report any bugs or feature requests to
                     }
                   }
               }
+            \noindent
             \seq_use:Nnnn \l__affiliations_tmpa_seq 
                             {\l__affiliations_separator_between_two_tl} 
                             {\l__affiliations_separator_between_mult_tl} 
