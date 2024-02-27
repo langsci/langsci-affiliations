@@ -461,7 +461,8 @@ Please report any bugs or feature requests to
 %    \end{macro}
 
 %    \begin{macro}[int]{\__affiliations_output_authors:}
-%    A helper macro to output the list of authors, with affiliation marks (if any).
+%    A helper macro to output the list of authors, with affiliation marks 
+%    (if any).
 %    \begin{macrocode}
 \cs_new:Nn \__affiliations_output_authors:
   {
@@ -482,7 +483,8 @@ Please report any bugs or feature requests to
               \seq_put_right:Nx \l__affiliations_tmpa_seq 
                 {
                   \tl_rescan:nn {} {##1} 
-                  \exp_not:N \textsuperscript{\tl_use:N \l__affiliations_tmpb_tl} 
+                  \exp_not:N 
+                    \textsuperscript{\tl_use:N \l__affiliations_tmpb_tl} 
                 }
             }
             {before}
@@ -491,7 +493,8 @@ Please report any bugs or feature requests to
                 {
                   \exp_not:N \__affiliations_recover_orcid:n { ##1 }
                   \tl_rescan:nn {} {##1} 
-                  \exp_not:N \textsuperscript{\tl_use:N \l__affiliations_tmpb_tl} 
+                  \exp_not:N 
+                    \textsuperscript{\tl_use:N \l__affiliations_tmpb_tl} 
                 }            
             }
             {after}
@@ -500,7 +503,8 @@ Please report any bugs or feature requests to
                 {
                   \tl_rescan:nn {} {##1} 
                   \exp_not:N \__affiliations_recover_orcid:n { ##1 }
-                  \exp_not:N \textsuperscript{\tl_use:N \l__affiliations_tmpb_tl} 
+                  \exp_not:N 
+                    \textsuperscript{\tl_use:N \l__affiliations_tmpb_tl} 
                 }            
             }
           }
@@ -549,6 +553,8 @@ Please report any bugs or feature requests to
 %    \end{macrocode}       
 %  Now strip all instances of \cs{affiliations}\marg{list} and \cs{orcid}
 %  \marg{id} to receive the name of the author.
+%  Also trim all leading and trailing spaces that remain after affiliation and 
+%  ORCiD replacement.
 %    \begin{macrocode}       
                            
         \regex_replace_all:nnN {\c{orcid} \cB. (\c[^BE].*) \cE.} 
@@ -557,6 +563,8 @@ Please report any bugs or feature requests to
         \regex_replace_all:nnN {\c{affiliation} \cB. (\c[^BE].*) \cE.} 
                                {}
                                \l__affiliations_names_tmp_tl
+                               
+        \tl_trim_spaces:N \l__affiliations_names_tmp_tl
 
 %    \end{macrocode}       
 %  And store the data in two separate property lists.
@@ -627,7 +635,8 @@ Please report any bugs or feature requests to
                           \group_begin:
                             \exp_not:N \__affiliations_output_authors_font:
                             \tl_rescan:nn {} {##1}
-                            \exp_not:N \__affiliations_recover_orcid:n { ##1 }\\[0.5ex]
+                            \exp_not:N \__affiliations_recover_orcid:n { ##1 }
+                            \\[0.5ex]
                           \group_end:
                           \group_begin:
                             \exp_not:N \__affiliations_output_affiliation_font:
@@ -653,24 +662,27 @@ Please report any bugs or feature requests to
               {
                 {none}
                   {
-                    \seq_put_right:Nx \l__affiliations_tmpa_seq
-                                      { \tl_rescan:nn {} {##1} }
+                    \seq_put_right:Nx 
+                      \l__affiliations_tmpa_seq
+                      { \tl_rescan:nn {} {##1} }
                   }
                 {before}
                   {
-                    \seq_put_right:Nx \l__affiliations_tmpa_seq 
-                                      {
-                                        \exp_not:N \__affiliations_recover_orcid:n { ##1 }
-                                        \tl_rescan:nn {} {##1} 
-                                      }
+                    \seq_put_right:Nx 
+                      \l__affiliations_tmpa_seq 
+                        {
+                          \exp_not:N \__affiliations_recover_orcid:n { ##1 }
+                          \tl_rescan:nn {} {##1} 
+                        }
                   }
                 {after}
                   {
-                    \seq_put_right:Nx \l__affiliations_tmpa_seq 
-                                      {
-                                        \tl_rescan:nn {} {##1} 
-                                        \exp_not:N \__affiliations_recover_orcid:n { ##1 }
-                                      }
+                    \seq_put_right:Nx 
+                      \l__affiliations_tmpa_seq 
+                        {
+                          \tl_rescan:nn {} {##1} 
+                          \exp_not:N \__affiliations_recover_orcid:n { ##1 }
+                        }
                   }   
                 }           
           }
