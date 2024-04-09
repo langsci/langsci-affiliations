@@ -142,6 +142,8 @@ Please report any bugs or feature requests to
 % Use these to separate affiliation indices after each author.
 % \item[|separator between affiliations =| \meta{tokens}\hfill (initially |\textvisiblespace |)]
 % Separates the affiliations in the affiliation line.
+% \item[|author affiliation skip =| \meta{dimexpr}\hfill (initially |0.5ex|)]
+% Distance between author(s) and affiliation(s).
 % \end{description}
 % 
 % \noindent The way the input is digested can be customised with these two settings:
@@ -302,7 +304,11 @@ Please report any bugs or feature requests to
     input~affiliation~separator .tl_set:N
         = \l_affiliations_input_afil_sep_tl,
     input~affiliation~separator .initial:n
-        = {;}
+        = {;},
+    author~affiliation~skip .dim_set:N
+        = \l__author_affil_sep_dim,
+    author~affiliation~skip .initial:n
+        = {0.5ex}
   }
 %    \end{macrocode}
 %    \begin{variable}[int]{
@@ -601,8 +607,10 @@ Please report any bugs or feature requests to
                   \__affiliations_output_authors_font:
                   \__affiliations_output_authors:
                 }
-            \group_end:\smallskip\\
+            \group_end:
+            \skip_vertical:N \l__author_affil_sep_dim
             \group_begin:
+              \noindent
               \parbox {\linewidth}
                 {
                   \__affiliations_output_affiliation_paragraph_format:
@@ -624,7 +632,7 @@ Please report any bugs or feature requests to
                           \group_begin:
                             \exp_not:N \__affiliations_output_authors_font:
                             \tl_rescan:nn {} {##1}
-                          \group_end:\\[0.5ex]
+                          \group_end:\\[\dim_use:N \l__author_affil_sep_dim]
                           \group_begin:
                             \exp_not:N \__affiliations_output_affiliation_font:
                             \tl_rescan:nn {} {##2}
@@ -638,7 +646,7 @@ Please report any bugs or feature requests to
                           \group_begin:
                             \exp_not:N \__affiliations_output_authors_font:
                             \exp_not:N \__affiliations_recover_orcid:n { ##1 }
-                            \tl_rescan:nn {} {##1}\\[0.5ex]
+                            \tl_rescan:nn {} {##1}\\[\dim_use:N \l__author_affil_sep_dim]
                           \group_end:
                           \group_begin:
                             \exp_not:N \__affiliations_output_affiliation_font:
@@ -654,7 +662,7 @@ Please report any bugs or feature requests to
                             \exp_not:N \__affiliations_output_authors_font:
                             \tl_rescan:nn {} {##1}
                             \exp_not:N \__affiliations_recover_orcid:n { ##1 }
-                            \\[0.5ex]
+                            \\[\dim_use:N \l__author_affil_sep_dim]
                           \group_end:
                           \group_begin:
                             \exp_not:N \__affiliations_output_affiliation_font:
