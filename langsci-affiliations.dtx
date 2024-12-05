@@ -125,8 +125,8 @@ Please report any bugs or feature requests to
 % \item[|output in groups =| \meta{boolean}\hfill (initially |true|)] If |true|, authors and affiliations are output in the same line. When |false| each author and affiliation gets its own line. Only available if |output affiliation=true|.
 % \item[|output authors font =| \meta{font commands}\hfill (initially |\cs{Large}|)] Stores the font settings for the ouput of authors.
 % \item[|output affiliation font =| \meta{font commands}\hfill (initially |\cs{normalsize}|)] Stores the font settings for outputting affiliations.
-% \item[|output authors paragraph format =| \meta{layout settings}\hfill (initially |\cs{raggedright}|)] Stores the paragraph settings for the author block. These settings are only applied if |output in groups=true|.
-% \item[|output affiliation paragraph format =| \meta{layout settings}\hfill (initially |\cs{raggedright}|)] Stores the paragraph settings for the affiliation block. These settings are only applied if |output in groups=true|.
+% \item[|output authors paragraph format =| \meta{layout}\hfill (initially |\cs{raggedright}|)] Stores the paragraph settings for the author block. These settings are only applied if |output in groups=true|.
+% \item[|output affiliation paragraph format =| \meta{layout}\hfill (initially |\cs{raggedright}|)] Stores the paragraph settings for the affiliation block. These settings are only applied if |output in groups=true|.
 % \end{description}
 % 
 % \noindent Output separators between authors and affiliations are customisable as well:
@@ -142,7 +142,7 @@ Please report any bugs or feature requests to
 % Use these to separate affiliation indices after each author.
 % \item[|separator between affiliations =| \meta{tokens}\hfill (initially |\textvisiblespace |)]
 % Separates the affiliations in the affiliation line.
-% \item[|author affiliation skip =| \meta{dimexpr}\hfill (initially |0.5ex|)]
+% \item[|author affiliation skip =| \meta{dimexpr}\hfill (initially \cs{smallskipamount})]
 % Distance between author(s) and affiliation(s).
 % \end{description}
 % 
@@ -308,7 +308,7 @@ Please report any bugs or feature requests to
     author~affiliation~skip .dim_set:N
         = \l__author_affil_sep_dim,
     author~affiliation~skip .initial:n
-        = {0.5ex}
+        = {\smallskipamount}
   }
 %    \end{macrocode}
 %    \begin{variable}[int]{
